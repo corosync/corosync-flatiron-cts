@@ -1,0 +1,7 @@
+.deps
+*.o
+confdb_test_agent
+cpg_test_agent
+sam_test_agent
+service_syncv2.lcrso
+votequorum_test_agent
