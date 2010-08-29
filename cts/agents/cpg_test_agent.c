@@ -50,7 +50,7 @@
 #include <corosync/totem/coropoll.h>
 #include <corosync/list.h>
 #include <corosync/cpg.h>
-#include "../../exec/crypto.h"
+#include "crypto.h"
 #include "common_test_agent.h"
 
 

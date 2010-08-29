@@ -135,14 +135,18 @@ AC_ARG_ENABLE([coverage],
 	[  --enable-coverage       : coverage analysis of the codebase. ],
 	[ default="no" ])
 
-AC_ARG_ENABLE([testagents],
-	[  --enable-testagents            : Install Test Agents. ],,
-	[ default="no" ])
-
 AC_ARG_ENABLE([augeas],
 	[  --enable-augeas           : Install the augeas lens for corosync.conf ],,
 	[ enable_augeas="no" ])
 AM_CONDITIONAL(INSTALL_AUGEAS, test x$enable_augeas = xyes)
+
+
+AC_ARG_WITH([corosyncdir],
+	[  --with-corosyncdir=DIR     : path to corosync source directory. ],
+	[ CORODIR="$withval" ],
+	[ CORODIR="../corosync" ])
+
+AC_SUBST(CORODIR)
 
 AC_SUBST(CP)
 # *FLAGS handling goes here
@@ -165,11 +169,6 @@ if test "x${GCC}" = xyes; then
 	GDB_FLAGS="-ggdb3"
 else
 	GDB_FLAGS="-g"
-fi
-
-if test "x${enable_testagents}" = xyes; then
-	AC_DEFINE_UNQUOTED([HAVE_TESTAGENTS], 1, [have testagents])
-	PACKAGE_FEATURES="$PACKAGE_FEATURES testagents"
 fi
 
 if test "x${enable_augeas}" = xyes; then
@@ -241,7 +240,6 @@ AC_SUBST([COVERAGE_LCRSO_EXTRA_LDFLAGS])
 AC_SUBST([OS_DYFLAGS])
 
 AC_SUBST([OS_LDL])
-AM_CONDITIONAL(INSTALL_TESTAGENTS, test -n "${enable_testagents}")
 AM_CONDITIONAL(AUGTOOL, test -n "${AUGTOOL}")
 
 AC_DEFINE_UNQUOTED([PACKAGE_FEATURES], "${PACKAGE_FEATURES}", [corosync built-in features])

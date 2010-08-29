@@ -30,15 +30,13 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 
 MAINTAINERCLEANFILES = Makefile.in
-INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include \
-		-I$(top_builddir)/include/corosync
+INCLUDES = -I$(CORODIR)/include/corosync -I$(CORODIR)/exec
 
 SOURCES =
 TEST_AGENTS = cpg_test_agent confdb_test_agent sam_test_agent votequorum_test_agent
 
 EXTRA_DIST		= syncv2.c
 
-if INSTALL_TESTAGENTS
 agentdir = $(datadir)/$(PACKAGE)/tests
 bin_PROGRAMS = $(TEST_AGENTS)
 dist_agent_SCRIPTS = mem_leak_test.sh net_breaker.sh
@@ -48,52 +46,25 @@ SERVICE_LCRSO		= syncv2
 SOURCES			+= $(SERVICE_LCRSO:%=%.c)
 LCRSO			= $(SERVICE_LCRSO:%=service_%.lcrso)
 LCRSO_OBJS		= $(SOURCES:%.c=%.o)
-else
-noinst_PROGRAMS = $(TEST_AGENTS)
-noinst_SCRIPTS = mem_leak_test.sh net_breaker.sh
-LCRSO =
-LCRSO_OBJS =
-endif
 
 noinst_HEADERS          = common_test_agent.h
 
 cpg_test_agent_SOURCES = cpg_test_agent.c common_test_agent.c
-cpg_test_agent_LDADD =  -lcpg -lcoroipcc ../../exec/coropoll.o ../../exec/crypto.o
-cpg_test_agent_LDFLAGS =  -L../../lib -L.
+cpg_test_agent_LDADD =  -lcpg -lcoroipcc $(CORODIR)/exec/coropoll.o $(CORODIR)/exec/crypto.o
 
 confdb_test_agent_SOURCES = confdb_test_agent.c common_test_agent.c
-confdb_test_agent_LDADD =  -lconfdb -lcoroipcc ../../exec/coropoll.o
-confdb_test_agent_LDFLAGS =  -L../../lib 
+confdb_test_agent_LDADD =  -lconfdb -lcoroipcc $(CORODIR)/exec/coropoll.o
 
 sam_test_agent_SOURCES = sam_test_agent.c common_test_agent.c
-sam_test_agent_LDADD =  -lsam ../../exec/coropoll.o
-sam_test_agent_LDFLAGS =  -L../../lib 
+sam_test_agent_LDADD =  -lsam $(CORODIR)/exec/coropoll.o
 
 votequorum_test_agent_SOURCES = votequorum_test_agent.c common_test_agent.c
-votequorum_test_agent_LDADD =  -lvotequorum -lquorum -lcoroipcc ../../exec/coropoll.o
-votequorum_test_agent_LDFLAGS =  -L../../lib 
-
-if BUILD_DARWIN
-
-service_%.lcrso: %.o
-	$(CC) $(CFLAGS) -L$(top_builddir)/exec -llogsys -bundle -bundle_loader $(top_builddir)/exec/corosync $^ -o $@
-
-else
-if BUILD_SOLARIS
-
-service_%.lcrso: %.o
-	$(LD) $(LDFLAGS) -G $^ -o $@
-
-else
+votequorum_test_agent_LDADD =  -lvotequorum -lquorum -lcoroipcc $(CORODIR)/exec/coropoll.o
 
 service_%.lcrso: %.o
 	$(CC) $(CFLAGS) $(COVERAGE_LCRSO_EXTRA_LDFLAGS) -shared -Wl,-soname=$@ $^ -o $@
-endif
-endif
 
 
-
-if INSTALL_TESTAGENTS
 syncv2.o: syncv2.c
 	$(CC) $(AM_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) -c -o $@ $<
 
@@ -107,8 +78,6 @@ install-exec-local:
 uninstall-local:
 	cd $(DESTDIR)/$(LCRSODIR) && \
 		rm -f $(LCRSO)
-
-endif
 
 clean-local:
 	rm -f *.o *.a *.so* *.da *.bb *.bbg *.lcrso
