@@ -12,6 +12,8 @@
 # COROSYNC_CTS_DIR path to corosync-flatiron-cts dir
 #
 
+LOG="echo CTS: "
+
 # required packages
 which mock >/dev/null 2>&1
 if [ $? -ne 0 ]
@@ -41,26 +43,29 @@ if [ -z "$COROSYNC_CTS_DIR" ]
 then
 	COROSYNC_CTS_DIR=~/corosync-flatiron-cts
 fi
+
+rm -f $RPM_DIR/corosync*.rpm
+
 set -e
 
 for d in $COROSYNC_DIR $COROSYNC_CTS_DIR
 do
 	cd $d
-	echo $d': running autogen ...'
+	$LOG 'running autogen ...'
 	./autogen.sh
-	echo $d': running configure ...'
+	$LOG 'running configure ...'
 	./configure 
-	echo $d': building source rpm'
+	$LOG 'building source rpm'
 	rm -f *.src.rpm
 	make srpm 
 	SRPM=$(ls *src.rpm)
 	if [ ! -f $SRPM ]
 	then
-		echo $0:$d no source rpm to build from!
+		$LOG no source rpm to build from!
 		exit 1
 	fi
 
-	echo "$d: running mock rebuild ($SRPM)"
+	$LOG "running mock rebuild ($SRPM)"
 	$MOCK -v --no-clean -r $TARGET --rebuild $SRPM
 
 	cd -
@@ -68,7 +73,7 @@ done
 
 if [ -z "$TEST_NODES" ]
 then
-	echo no test nodes, exiting without running cts.
+	$LOG no test nodes, exiting without running cts.
 	exit 0
 else
 	# start the VMs, or leave them running?
@@ -78,33 +83,34 @@ fi
 RPM_LIST=
 for r in $RPM_DIR/corosync*.rpm
 do
-  case $r in
-    *src.rpm)
-    ;;
-    *-devel-*)
-    ;;
-    *)
-    RPM_LIST="$RPM_LIST $r"
-    ;;
-  esac
+	case $r in
+		*src.rpm)
+	;;
+		*-devel-*)
+	;;
+		*)
+		RPM_LIST="$RPM_LIST $r"
+	;;
+	esac
 done
 
-
-echo installing $RPM_LIST
-echo onto the test nodes $TEST_NODES
+$LOG installing $RPM_LIST
+$LOG onto the test nodes $TEST_NODES
 
 # load and install rpm(s) onto the nodes
 for n in $TEST_NODES
 do
+	$LOG "Installing onto $n"
 	ssh $n "rm -rf /tmp/corosync*.rpm"
 	scp $RPM_LIST $n:/tmp/
         ssh $n "rpm --nodeps --force -Uvf /tmp/corosync*.rpm"
 done
 
-echo 'running test ...'
-rm -f cts.log
+$LOG 'running CTS ...'
+CTS_LOG=$(pwd)/cts.log
+rm -f $CTS_LOG
 pushd cts
-# needs sudo to read /var/log/messages
-sudo -n ./corolab.py --nodes "$TEST_NODES" --outputfile ../cts.log
+	# needs sudo to read /var/log/messages
+	sudo -n ./corolab.py --nodes "$TEST_NODES" --outputfile $CTS_LOG
 popd
 
