@@ -69,8 +69,6 @@ do
     ;;
     *-devel-*)
     ;;
-#    *debuginfo*)
-#    ;;
     *)
     RPM_LIST="$RPM_LIST $r"
     ;;
@@ -86,7 +84,7 @@ for n in $TEST_NODES
 do
 	ssh $n "rm -rf /tmp/corosync*.rpm"
 	scp $RPM_LIST $n:/tmp/
-        ssh $n "rpm --force -Uvf /tmp/corosync*.rpm"
+        ssh $n "rpm --nodeps --force -Uvf /tmp/corosync*.rpm"
 done
 
 echo 'running test ...'

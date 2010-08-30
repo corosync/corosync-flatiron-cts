@@ -1,0 +1,62 @@
+%global alphatag @alphatag@
+
+Name: corosync-testagents
+Summary: The Corosync Cluster Engine Test Agents
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+Version: @version@
+Release: 1%{?alphatag:.%{alphatag}}%{?dist}
+License: BSD
+URL: http://www.openais.org
+Source0: http://developer.osdl.org/dev/openais/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
+
+# Runtime bits
+Requires: corosynclib = %{version}-%{release}
+Conflicts: corosync > 2.0, corosync-devel > 2.0
+
+BuildRequires: autoconf automake
+#corosync-devel
+
+BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+./autogen.sh
+
+%{configure} \
+        --with-corosyncdir=%{corosyncdir}
+
+make %{_smp_mflags}
+
+%install
+rm -rf %{buildroot}
+
+make install DESTDIR=%{buildroot}
+
+## tree fixup
+# drop docs and html docs for now
+rm -rf %{buildroot}%{_docdir}/*
+
+%clean
+rm -rf %{buildroot}
+
+%description
+This package contains corosync test agents.
+
+%files -n corosync-testagents
+%defattr(755,root,root,-)
+%{_datadir}/corosync/tests/mem_leak_test.sh
+%{_datadir}/corosync/tests/net_breaker.sh
+%{_bindir}/cpg_test_agent
+%{_bindir}/confdb_test_agent
+%{_bindir}/sam_test_agent
+%{_bindir}/votequorum_test_agent
+%{_libexecdir}/lcrso/service_syncv2.lcrso
+%defattr(-,root,root,-)
+%doc INSTALL LICENSE AUTHORS
+
+%changelog
+* @date@ Autotools generated version <nobody@nowhere.org> - @version@-1.@alphatag@
+- Autotools generated version

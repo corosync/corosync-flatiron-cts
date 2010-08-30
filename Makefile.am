@@ -33,7 +33,7 @@ SPEC			= $(PACKAGE_NAME).spec
 
 TARFILE			= $(PACKAGE_NAME)-$(VERSION).tar.gz
 
-EXTRA_DIST		= autogen.sh $(SPEC).in \
+EXTRA_DIST		= autogen.sh $(SPEC).in TODO \
 			  conf/lenses/tests/test_corosync.aug conf/lenses/corosync.aug
 
 AUTOMAKE_OPTIONS	= foreign
@@ -42,7 +42,7 @@ MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure depcomp \
 			  config.guess config.sub missing install-sh \
 			  autoheader automake autoconf test_lense.sh
 
-dist_doc_DATA		= LICENSE INSTALL TODO AUTHORS
+dist_doc_DATA		= LICENSE INSTALL AUTHORS
 
 if INSTALL_AUGEAS
 corolensdir		= ${datadir}/augeas/lenses
@@ -75,9 +75,9 @@ clean-generic:
 $(SPEC): $(SPEC).in
 	rm -f $@-t $@
 	LC_ALL=C date="$(shell date "+%a %b %d %Y")" && \
-	alphatag="$(shell svnversion | sed -e "s#.*:##g" -e "s#[MS]##g")" && \
+	alphatag="$(shell git describe  | cut -d- -f3-)" && \
 	sed \
-		-e "s#@alphatag@#r$$alphatag#g" \
+		-e "s#@alphatag@#$$alphatag#g" \
 		-e "s#@version@#$(VERSION)#g" \
 		-e "s#@date@#$$date#g" \
 	$< > $@-t
@@ -91,7 +91,8 @@ RPMBUILDOPTS	= --define "_sourcedir $(abs_builddir)" \
 		  --define "_specdir $(abs_builddir)" \
 		  --define "_builddir $(abs_builddir)" \
 		  --define "_srcrpmdir $(abs_builddir)" \
-		  --define "_rpmdir $(abs_builddir)"
+		  --define "_rpmdir $(abs_builddir)" \
+		  --define "corosyncdir $(CORODIR)"
 
 srpm: clean
 	$(MAKE) $(SPEC) $(TARFILE)

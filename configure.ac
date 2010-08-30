@@ -4,7 +4,7 @@
 # bootstrap / init
 AC_PREREQ([2.61])
 
-AC_INIT([corosync], [1.2.7], [openais@lists.osdl.org])
+AC_INIT([corosync-testagents], [1.2.7], [openais@lists.osdl.org])
 AM_INIT_AUTOMAKE([-Wno-portability])
 
 AC_CONFIG_SRCDIR([cts/agents/cpg_test_agent.c])
@@ -140,13 +140,22 @@ AC_ARG_ENABLE([augeas],
 	[ enable_augeas="no" ])
 AM_CONDITIONAL(INSTALL_AUGEAS, test x$enable_augeas = xyes)
 
+AC_ARG_WITH([lcrso-dir],
+	[  --with-lcrso-dir=DIR    : corosync lcrso files. ],
+	[ LCRSODIR="$withval" ],
+	[ LCRSODIR="$libexecdir/lcrso" ])
+
 
 AC_ARG_WITH([corosyncdir],
 	[  --with-corosyncdir=DIR     : path to corosync source directory. ],
 	[ CORODIR="$withval" ],
-	[ CORODIR="../corosync" ])
+	[ AC_MSG_ERROR([Please provide corosync source dir]) ])
 
 AC_SUBST(CORODIR)
+
+CP=cp
+OS_LDL="-ldl"
+OS_DYFLAGS="-rdynamic"
 
 AC_SUBST(CP)
 # *FLAGS handling goes here
@@ -236,11 +245,13 @@ CFLAGS="$ENV_CFLAGS $OPT_CFLAGS $GDB_FLAGS $OS_CFLAGS \
 CPPFLAGS="$ENV_CPPFLAGS $ANSI_CPPFLAGS $OS_CPPFLAGS"
 LDFLAGS="$ENV_LDFLAGS $COVERAGE_LDFLAGS $OS_LDFLAGS"
 
+AC_SUBST([LCRSODIR])
 AC_SUBST([COVERAGE_LCRSO_EXTRA_LDFLAGS])
 AC_SUBST([OS_DYFLAGS])
 
 AC_SUBST([OS_LDL])
 AM_CONDITIONAL(AUGTOOL, test -n "${AUGTOOL}")
+AC_DEFINE_UNQUOTED([LCRSODIR], "$(eval echo ${LCRSODIR})", [LCRSO directory])
 
 AC_DEFINE_UNQUOTED([PACKAGE_FEATURES], "${PACKAGE_FEATURES}", [corosync built-in features])
 
@@ -256,6 +267,7 @@ AC_MSG_RESULT([  System configuration     = ${sysconfdir}])
 AC_MSG_RESULT([  corosync config dir      = ${COROSYSCONFDIR}])
 AC_MSG_RESULT([  Features                 =${PACKAGE_FEATURES}])
 AC_MSG_RESULT([])
+AC_MSG_RESULT([  LCRSO                    = ${LCRSODIR}])
 AC_MSG_RESULT([  Default optimization     = ${OPT_CFLAGS}])
 AC_MSG_RESULT([  Default debug options    = ${GDB_CFLAGS}])
 AC_MSG_RESULT([  Extra compiler warnings  = ${EXTRA_WARNING}])

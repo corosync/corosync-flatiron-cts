@@ -37,7 +37,7 @@ TEST_AGENTS = cpg_test_agent confdb_test_agent sam_test_agent votequorum_test_ag
 
 EXTRA_DIST		= syncv2.c
 
-agentdir = $(datadir)/$(PACKAGE)/tests
+agentdir = $(datadir)/corosync/tests
 bin_PROGRAMS = $(TEST_AGENTS)
 dist_agent_SCRIPTS = mem_leak_test.sh net_breaker.sh
 
