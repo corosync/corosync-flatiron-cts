@@ -50,7 +50,7 @@ LCRSO_OBJS		= $(SOURCES:%.c=%.o)
 noinst_HEADERS          = common_test_agent.h
 
 cpg_test_agent_SOURCES = cpg_test_agent.c common_test_agent.c
-cpg_test_agent_LDADD =  -lcpg -lcoroipcc -ltotem_pg
+cpg_test_agent_LDADD =  -lcpg -lcfg -lcoroipcc -ltotem_pg
 
 confdb_test_agent_SOURCES = confdb_test_agent.c common_test_agent.c
 confdb_test_agent_LDADD =  -lconfdb -lcoroipcc -ltotem_pg
