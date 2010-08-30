@@ -14,8 +14,7 @@ Source0: http://developer.osdl.org/dev/openais/downloads/%{name}-%{version}/%{na
 Requires: corosynclib = %{version}-%{release}
 Conflicts: corosync > 2.0, corosync-devel > 2.0
 
-BuildRequires: autoconf automake
-#corosync-devel
+BuildRequires: autoconf automake corosync-devel
 
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
