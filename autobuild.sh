@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# This script is called by auto-build to test
+# This script is called by buildbot to test
 # corosync. It is run continously to help catch regressions.
 #
 # ENVIRONMENT variables that affect it's behaviour:
@@ -17,40 +17,52 @@ then
 	echo 'please install mock (yum install mock).'
         exit 1
 fi
-
 MOCK=$(which mock)
-
-set -e
-
-echo 'running autogen ...'
-./autogen.sh
-
-echo 'running configure ...'
-./configure 
-
-echo 'building source rpm'
-rm -f *.src.rpm
-make srpm 
-SRPM=$(ls *src.rpm)
-
-if [ ! -f $SRPM ]
-then
-	echo $0 no source rpm to build from!
-	exit 1
-fi
 
 if [ -z "$TARGET" ]
 then
-	TARGET=fedora-12-x86_64
+	TARGET=rhel-6-x86_64
 fi
 
 RPM_DIR=/var/lib/mock/$TARGET/result
-rm -f $RPM_DIR/corosync*.rpm
+if [ ! -d $RPM_DIR ]
+then
+	$MOCK -v -r $TARGET --init
+fi
 
-echo "running mock init ($TARGET)"
-$MOCK -r $TARGET --init 
-echo "running mock rebuild ($SRPM)"
-$MOCK -r $TARGET --rebuild $SRPM --with testagents
+if [ -z "$COROSYNC_DIR" ]
+then
+	COROSYNC_DIR=~/corosync
+fi
+
+if [ -z "$COROSYNC_CTS_DIR" ]
+then
+	COROSYNC_CTS_DIR=~/corosync-flatiron-cts
+fi
+set -e
+
+for d in $COROSYNC_DIR $COROSYNC_CTS_DIR
+do
+	cd $d
+	echo $d': running autogen ...'
+	./autogen.sh
+	echo $d': running configure ...'
+	./configure 
+	echo $d': building source rpm'
+	rm -f *.src.rpm
+	make srpm 
+	SRPM=$(ls *src.rpm)
+	if [ ! -f $SRPM ]
+	then
+		echo $0:$d no source rpm to build from!
+		exit 1
+	fi
+
+	echo "$d: running mock rebuild ($SRPM)"
+	$MOCK -v --no-clean -r $TARGET --rebuild $SRPM
+
+	cd -
+done
 
 if [ -z "$TEST_NODES" ]
 then
