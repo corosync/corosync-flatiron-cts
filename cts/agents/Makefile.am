@@ -30,12 +30,12 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 
 MAINTAINERCLEANFILES = Makefile.in
-INCLUDES = -I$(CORODIR)/include/corosync -I$(CORODIR)/exec
+INCLUDES = -I.
 
 SOURCES =
 TEST_AGENTS = cpg_test_agent confdb_test_agent sam_test_agent votequorum_test_agent
 
-EXTRA_DIST		= syncv2.c
+EXTRA_DIST		= syncv2.c crypto.h tlist.h
 
 agentdir = $(datadir)/corosync/tests
 bin_PROGRAMS = $(TEST_AGENTS)
@@ -50,16 +50,16 @@ LCRSO_OBJS		= $(SOURCES:%.c=%.o)
 noinst_HEADERS          = common_test_agent.h
 
 cpg_test_agent_SOURCES = cpg_test_agent.c common_test_agent.c
-cpg_test_agent_LDADD =  -lcpg -lcoroipcc $(CORODIR)/exec/coropoll.o $(CORODIR)/exec/crypto.o
+cpg_test_agent_LDADD =  -lcpg -lcoroipcc -ltotem_pg
 
 confdb_test_agent_SOURCES = confdb_test_agent.c common_test_agent.c
-confdb_test_agent_LDADD =  -lconfdb -lcoroipcc $(CORODIR)/exec/coropoll.o
+confdb_test_agent_LDADD =  -lconfdb -lcoroipcc -ltotem_pg
 
 sam_test_agent_SOURCES = sam_test_agent.c common_test_agent.c
-sam_test_agent_LDADD =  -lsam $(CORODIR)/exec/coropoll.o
+sam_test_agent_LDADD =  -lsam -ltotem_pg
 
 votequorum_test_agent_SOURCES = votequorum_test_agent.c common_test_agent.c
-votequorum_test_agent_LDADD =  -lvotequorum -lquorum -lcoroipcc $(CORODIR)/exec/coropoll.o
+votequorum_test_agent_LDADD =  -lvotequorum -lquorum -lcoroipcc -ltotem_pg
 
 service_%.lcrso: %.o
 	$(CC) $(CFLAGS) $(COVERAGE_LCRSO_EXTRA_LDFLAGS) -shared -Wl,-soname=$@ $^ -o $@

@@ -8,7 +8,7 @@ AC_INIT([corosync-testagents], [1.2.7], [openais@lists.osdl.org])
 AM_INIT_AUTOMAKE([-Wno-portability])
 
 AC_CONFIG_SRCDIR([cts/agents/cpg_test_agent.c])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADER([cts/agents/config.h])
 
 AC_CANONICAL_HOST
 
@@ -144,14 +144,6 @@ AC_ARG_WITH([lcrso-dir],
 	[  --with-lcrso-dir=DIR    : corosync lcrso files. ],
 	[ LCRSODIR="$withval" ],
 	[ LCRSODIR="$libexecdir/lcrso" ])
-
-
-AC_ARG_WITH([corosyncdir],
-	[  --with-corosyncdir=DIR     : path to corosync source directory. ],
-	[ CORODIR="$withval" ],
-	[ AC_MSG_ERROR([Please provide corosync source dir]) ])
-
-AC_SUBST(CORODIR)
 
 CP=cp
 OS_LDL="-ldl"

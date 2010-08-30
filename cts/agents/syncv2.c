@@ -61,9 +61,11 @@
 #include <corosync/list.h>
 #include <corosync/engine/logsys.h>
 
-#include "../exec/tlist.h"
+#include "tlist.h"
 
 LOGSYS_DECLARE_SUBSYS ("TST2");
+
+#define TST_SV2_SERVICE 19
 
 /*
  * Service Interfaces required by service_message_handler struct

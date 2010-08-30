@@ -91,8 +91,7 @@ RPMBUILDOPTS	= --define "_sourcedir $(abs_builddir)" \
 		  --define "_specdir $(abs_builddir)" \
 		  --define "_builddir $(abs_builddir)" \
 		  --define "_srcrpmdir $(abs_builddir)" \
-		  --define "_rpmdir $(abs_builddir)" \
-		  --define "corosyncdir $(CORODIR)"
+		  --define "_rpmdir $(abs_builddir)"
 
 srpm: clean
 	$(MAKE) $(SPEC) $(TARFILE)
