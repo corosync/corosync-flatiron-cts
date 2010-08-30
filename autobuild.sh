@@ -8,6 +8,8 @@
 # TEST_NODES - the hostnames of the nodes to be tested
 # TARGET - this is used by mock so look in /etc/mock for
 #          possible options.
+# COROSYNC_DIR path to corosync dir
+# COROSYNC_CTS_DIR path to corosync-flatiron-cts dir
 #
 
 # required packages

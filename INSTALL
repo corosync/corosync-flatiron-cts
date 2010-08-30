@@ -35,7 +35,7 @@ yum install augeas
 4] Configuring corosync for CTSs testing
 --------------------------------------------------------------------------------
 
-./configure --enable-testagents --enable-augeas --enable-debug
+./configure
 
 and then install it on the TTN.
 
@@ -43,4 +43,21 @@ and then install it on the TTN.
 --------------------------------------------------------------------------------
 cd <your-corosync-src-dir>/cts
 sudo ./corolab.py --nodes "n1 n2 n3"
+
+
+How to run "./autobuild.sh"
+===========================
+1] get all of the above working.
+
+2] now you need to be able to: (without a password)
+	sudo ssh root@<node>
+
+3] run like this:
+
+cd ~/work/corosync-flatiron-cts
+export COROSYNC_DIR=~/work/corosync/branches/flatiron
+export COROSYNC_CTS_DIR=$(pwd)
+export TARGET=rhel-6-x86_64
+export TEST_NODES="r1 r2 r3 r4"
+./autobuild.sh
 
