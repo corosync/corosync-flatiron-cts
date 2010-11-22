@@ -205,7 +205,7 @@ class corosync_flatiron(ClusterManager):
             self.node_to_ip[node] = socket.gethostbyname (node)
         return self.node_to_ip[node]
 
-    def StartaCM(self, node):
+    def StartaCM(self, node, verbose=False):
 
         if not self.ShouldBeStatus.has_key(node):
             self.ShouldBeStatus[node] = "down"
@@ -229,15 +229,16 @@ class corosync_flatiron(ClusterManager):
 
         # votequorum agent started as needed.
         if self.applied_config.has_key('quorum/provider'):
-            if self.votequorum_agent.has_key(node):
-                self.votequorum_agent[node].restart()
-            else:
-                self.votequorum_agent[node] = VoteQuorumTestAgent(node, self.Env)
-                self.votequorum_agent[node].start()
+            if self.applied_config['quorum/provider'] is 'corosync_votequorum':
+                if self.votequorum_agent.has_key(node):
+                    self.votequorum_agent[node].restart()
+                else:
+                    self.votequorum_agent[node] = VoteQuorumTestAgent(node, self.Env)
+                    self.votequorum_agent[node].start()
 
         return ret
 
-    def StopaCM(self, node):
+    def StopaCM(self, node, verbose=False):
         if self.ShouldBeStatus[node] != "up":
             return 1
 
@@ -354,9 +355,10 @@ class TestAgentComponent(ScenarioComponent):
             self.CM.sam_agent[node] = SamTestAgent(node, CM.Env)
             self.CM.sam_agent[node].start()
             # votequorum agent started as needed.
-            if CM.applied_config.has_key('quorum/provider'):
-                self.CM.votequorum_agent[node] = VoteQuorumTestAgent(node, CM.Env)
-                self.CM.votequorum_agent[node].start()
+            if self.CM.applied_config.has_key('quorum/provider'):
+                if CM.applied_config['quorum/provider'] is 'corosync_votequorum':
+                    self.CM.votequorum_agent[node] = VoteQuorumTestAgent(node, CM.Env)
+                    self.CM.votequorum_agent[node].start()
         return 1
 
     def TearDown(self, CM):
@@ -433,8 +435,17 @@ class TestAgent(object):
         '''Tear down (undo) the given ScenarioComponent'''
         self.env.debug('test agent: stopping %s on node %s' % (self.binary, self.node))
         self.sock.close ()
-        self.rsh(self.node, "killall " + self.binary + " 2>/dev/null")
+        self.rsh(self.node, "killall -9 " + self.binary + " 2>/dev/null")
         self.started = False
+
+    def kill(self):
+        '''Tear down (undo) the given ScenarioComponent'''
+        self.env.debug('test agent: killing %s on node %s' % (self.binary, self.node))
+        self.rsh(self.node, "killall -9 " + self.binary + " 2>/dev/null")
+        self.started = False
+
+    def getpid(self):
+        return self.rsh(self.node, 'pidof ' + self.binary, 1)
 
     def send (self, args):
         if not self.started:
@@ -472,7 +483,7 @@ class TestAgent(object):
         try:
             res = self.read ()
         except RuntimeError, msg:
-            self.env.log("send_recv_dynamic: %s; error: %s" % (str(real_msg), msg))
+            self.env.log("send_recv_dynamic: %s(); error: %s" % (self.func_name, msg))
 
         return res
 

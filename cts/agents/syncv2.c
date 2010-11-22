@@ -80,8 +80,6 @@ static void tst_sv2_confchg_fn (
 	const unsigned int *joined_list, size_t joined_list_entries,
 	const struct memb_ring_id *ring_id);
 
-static int tst_sv2_lib_init_fn (void *conn);
-static int tst_sv2_lib_exit_fn (void *conn);
 static struct corosync_api_v1 *api;
 
 static void tst_sv2_sync_init_v2 (
@@ -95,20 +93,23 @@ static void tst_sv2_sync_activate (void);
 
 static void tst_sv2_sync_abort (void);
 
+static int tst_sv2_exec_exit_fn (void);
+
 struct corosync_service_engine tst_sv2_service_engine = {
 	.name			= "corosync test synv2 service",
 	.id			= TST_SV2_SERVICE,
 	.priority		= 1,
 	.private_data_size	= 0,
 	.flow_control		= CS_LIB_FLOW_CONTROL_NOT_REQUIRED,
-	.lib_init_fn		= tst_sv2_lib_init_fn,
-	.lib_exit_fn		= tst_sv2_lib_exit_fn,
+	.lib_init_fn		= NULL,
+	.lib_exit_fn		= NULL,
 	.lib_engine		= NULL,
 	.lib_engine_count	= 0,
 	.exec_engine		= NULL,
 	.exec_engine_count	= 0,
 	.confchg_fn		= tst_sv2_confchg_fn,
 	.exec_init_fn		= tst_sv2_exec_init_fn,
+	.exec_exit_fn		= tst_sv2_exec_exit_fn,
 	.exec_dump_fn		= NULL,
 	.sync_mode		= CS_SYNC_V2,
 	.sync_init              = tst_sv2_sync_init_v2,
@@ -185,6 +186,17 @@ static int tst_sv2_exec_init_fn (
 	return 0;
 }
 
+static int32_t exit_count = 0;
+static int tst_sv2_exec_exit_fn (void)
+{
+	exit_count++;
+	log_printf (LOGSYS_LEVEL_INFO, "exit_count:%d", exit_count);
+	if (exit_count < 4) {
+		return -1;
+	}
+	return 0;
+}
+
 static void tst_sv2_confchg_fn (
 	enum totem_configuration_type configuration_type,
 	const unsigned int *member_list, size_t member_list_entries,
@@ -202,17 +214,6 @@ static void tst_sv2_confchg_fn (
 			"Member joined: %s", api->totem_ifaces_print (joined_list[j]));
 	}
 }
-
-static int tst_sv2_lib_init_fn (void *conn)
-{
-	return (0);
-}
-
-static int tst_sv2_lib_exit_fn (void *conn)
-{
-	return (0);
-}
-
 
 static void tst_sv2_sync_init_v2 (
 	const unsigned int *member_list,

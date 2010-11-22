@@ -426,7 +426,11 @@ class CpgMsgOrderBase(CoroTest):
 
             while len(msgs[n]) < self.total_num_msgs and waited < 360:
 
-                msg = self.CM.cpg_agent[n].read_messages(50)
+                try:
+                    msg = self.CM.cpg_agent[n].read_messages(50)
+                except:
+                    return self.failure('connection to test cpg_agent failed.')
+
                 if not msg == None:
                     msgl = msg.split(";")
 
@@ -706,7 +710,7 @@ class SamTest1(CoroTest):
         if 'OK' in res:
             return self.success()
         else:
-            return self.failure('sam test 1 failed')
+            return self.failure(self.name + ' failed')
 
 ###################################################################
 class SamTest2(CoroTest):
@@ -720,21 +724,7 @@ class SamTest2(CoroTest):
         if 'OK' in res:
             return self.success()
         else:
-            return self.failure('sam test 2 failed')
-
-###################################################################
-class SamTest3(CoroTest):
-    def __init__(self, cm):
-        CoroTest.__init__(self, cm)
-        self.name="SamTest3"
-
-    def __call__(self, node):
-        self.incr("calls")
-        res = self.CM.sam_agent[node].test3()
-        if 'OK' in res:
-            return self.success()
-        else:
-            return self.failure('sam test 3 failed')
+            return self.failure(self.name + ' failed')
 
 ###################################################################
 class SamTest4(CoroTest):
@@ -820,6 +810,7 @@ class VoteQuorumGoDown(VoteQuorumBase):
     def __call__(self, node):
         self.incr("calls")
 
+        self.victims = []
         pats = []
         pats.append("%s .*VQ notification quorate: 0" % self.listener)
         pats.append("%s .*NQ notification quorate: 0" % self.listener)
@@ -849,7 +840,7 @@ class VoteQuorumGoDown(VoteQuorumBase):
                 self.failure('unexpected number of expected_votes')
 
             if state.total_votes != nodes_alive:
-                self.failure('unexpected number of total votes:%d, nodes_alive:%d', (state.total_votes, nodes_alive))
+                self.failure('unexpected number of total votes:%d, nodes_alive:%d' % (state.total_votes, nodes_alive))
 
             min = ((len(self.CM.Env["nodes"]) + 2) / 2)
             if min != state.quorum:
@@ -1092,12 +1083,10 @@ AllTestClasses.append(CpgContextTest)
 AllTestClasses.append(VoteQuorumContextTest)
 AllTestClasses.append(SamTest1)
 AllTestClasses.append(SamTest2)
-AllTestClasses.append(SamTest3)
 AllTestClasses.append(SamTest4)
 AllTestClasses.append(ServiceLoadTest)
 AllTestClasses.append(MemLeakObject)
 AllTestClasses.append(MemLeakSession)
-
 AllTestClasses.append(FlipTest)
 AllTestClasses.append(RestartTest)
 AllTestClasses.append(StartOnebyOne)
