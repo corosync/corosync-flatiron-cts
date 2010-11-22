@@ -38,12 +38,18 @@ let qstr (k:regexp) =
 let compatibility = kv "compatibility" /whitetank|none/
 
 
+let member =
+  let setting =
+    qstr /memberaddr/ in
+  section "member" setting
+
 (* A integer subsection *)
 let interface =
   let setting =
     kv "ringnumber" Rx.integer
     |kv "mcastport" Rx.integer
-    |qstr /bindnetaddr|mcastaddr/ in
+    |qstr /bindnetaddr|mcastaddr/
+    |member in
   section "interface" setting
 
 (* The totem section *)
@@ -55,7 +61,7 @@ let totem =
     |kv "secauth" /on|off/
     |kv "crypto_type" /nss|sober/
     |kv "crypto_accept" /new|old/
-    |kv "transport" /udp|iba/
+    |kv "transport" /udp|iba|udpu/
     |kv "version" Rx.integer
     |kv "nodeid" Rx.integer
     |kv "threads" Rx.integer
@@ -125,6 +131,7 @@ let quorum =
    |kv "quorumdev_poll" Rx.integer
    |kv "leaving_timeout" Rx.integer
    |kv "disallowed" Rx.integer
+   |kv "quorate" Rx.integer
    |kv "two_node" Rx.integer in
   section "quorum" setting
 
@@ -140,6 +147,6 @@ let uidgid =
    qstr /uid|gid/ in
   section "uidgid" setting
 
-let lns = (comment|empty|compatibility|totem|quorum|logging|amf|service|uidgid)*
+let lns = (comment|empty|compatibility|totem|quorum|logging|amf|service|uidgid|member)*
 
 let xfm = transform lns (incl "/etc/corosync/corosync.conf")

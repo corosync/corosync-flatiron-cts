@@ -6,19 +6,26 @@ compatibility: whitetank
 totem {
 	version: 2
 	secauth: off
-    crypto_type: nss
-    crypto_accept: new
+	crypto_type: nss
+	crypto_accept: new
 	threads: 0
-    clear_node_high_bit: no
-    rrp_mode: none
-    transport: udp
-    token: 1000
+	clear_node_high_bit: no
+	rrp_mode: none
+	transport: udp
+	token: 1000
 	interface {
 		ringnumber: 0
 		bindnetaddr: 192.168.122.1
 		mcastaddr: 226.94.1.1
 		mcastport: 5405
+		member {
+			memberaddr: 10.16.35.101
+		}
+		member {
+			memberaddr: 10.16.35.102
+		}
 	}
+	transport: udpu
 }
 
 logging {
@@ -50,7 +57,21 @@ quorum {
     quorumdev_poll: 2
     leaving_timeout: 2
     disallowed: 0
+    quorate: 1
     two_node: 0
+}
+
+resources {
+	system {
+		memory_used {
+			recovery: reboot
+			max: 80
+		}
+		load_15min {
+			recovery: watchdog
+			max: 8.56
+		}
+	}
 }
 
 uidgid {
@@ -81,7 +102,12 @@ test Corosync.lns get conf =
 		{ "ringnumber" = "0" }
 		{ "bindnetaddr" = "192.168.122.1" }
 		{ "mcastaddr" = "226.94.1.1" }
-		{ "mcastport" = "5405" } } }
+		{ "mcastport" = "5405" }
+		{ "member"
+			{ "memberaddr" = "10.16.35.101" } }
+		{ "member"
+			{ "memberaddr" = "10.16.35.102" } } }
+	{ "transport" = "udpu" } }
   { }
   { "logging"
 	{ "fileline" = "off" }
@@ -109,7 +135,17 @@ test Corosync.lns get conf =
     { "quorumdev_poll" = "2" }
     { "leaving_timeout" = "2" }
     { "disallowed" = "0" }
+    { "quorate" = "1" }
     { "two_node" = "0" } }
+  { }
+    { "resources"
+	  { "system"
+		{ "memory_used"
+			{ "recovery" = "reboot" }
+			{ "max" = "80" } }
+		{ "load_15min"
+			{ "recovery" = "watchdog" }
+			{ "max" = "8.56" } } } }
   { }
   { "uidgid"
     { "uid" = "0" }

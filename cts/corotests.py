@@ -32,6 +32,8 @@ Copyright (c) 2010 Red Hat, Inc.
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 
+import random
+import socket
 from UserDict import UserDict
 from cts.CTStests import *
 from corosync import CpgTestAgent
@@ -1180,6 +1182,16 @@ def CoroTestList(cm, audits):
         configs.append(h)
     else:
         print 'Not including rrp tests. Use --rrp-binaddr to enable them.'
+
+    u = ConfigContainer('udpu')
+    u['totem/transport'] = 'udpu'
+#    u['totem/max_messages'] = '5'
+    num_nodes = 1
+    for n in cm.Env["nodes"]:
+        conf_name = 'totem/interface[1]/member[%d]/memberaddr' % num_nodes
+        u[conf_name] = socket.gethostbyname(n)
+        num_nodes = num_nodes + 1
+    configs.append(u)
 
     num=1
     for cfg in configs:

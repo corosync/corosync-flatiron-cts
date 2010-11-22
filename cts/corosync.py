@@ -180,7 +180,8 @@ class corosync_flatiron(ClusterManager):
 
     def install_all_config(self):
         tmp1 = {}
-        for c in self.new_config:
+        sorted_keys = sorted(self.new_config.keys())
+        for c in sorted_keys:
             self.log('configuring: ' + c + ' = '+ str(self.new_config[c]))
             self.config.set (c, self.new_config[c])
             self.applied_config[c] = self.new_config[c]
@@ -416,7 +417,7 @@ class TestAgent(object):
         self.env.debug('test agent: starting %s on node %s' % (self.binary, self.node))
         self.sock = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
         ip = socket.gethostbyname(self.node)
-        self.rsh(self.node, self.binary, blocking=0)
+        self.rsh(self.node, self.binary, synchronous=False)
         is_connected = False
         retries = 0
         while not is_connected:
