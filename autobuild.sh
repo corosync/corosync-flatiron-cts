@@ -21,7 +21,7 @@ then
 	echo 'please install mock (yum install mock).'
         exit 1
 fi
-MOCK=$(which mock)
+MOCK=/usr/bin/mock
 
 if [ -z "$TARGET" ]
 then
