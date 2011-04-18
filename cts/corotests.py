@@ -1066,7 +1066,7 @@ class GenStopAllBeekhof(CoroTest):
 GenTestClasses = []
 GenTestClasses.append(GenSimulStart)
 GenTestClasses.append(GenSimulStop)
-GenTestClasses.append(GenStopAllBeekhof)
+#GenTestClasses.append(GenStopAllBeekhof)
 GenTestClasses.append(CpgMsgOrderBasic)
 GenTestClasses.append(CpgMsgOrderZcb)
 GenTestClasses.append(CpgCfgChgOnExecCrash)
