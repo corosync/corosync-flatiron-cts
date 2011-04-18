@@ -25,32 +25,54 @@ MOCK=$(which mock)
 
 if [ -z "$TARGET" ]
 then
-	TARGET=rhel-6-x86_64
+	TARGET=rhel-6-x86_64-core
 fi
 
 RPM_DIR=/var/lib/mock/$TARGET/result
 if [ ! -d $RPM_DIR ]
 then
 	$MOCK -v -r $TARGET --init
-fi
-
-if [ -z "$COROSYNC_DIR" ]
-then
-	COROSYNC_DIR=~/corosync
+else
+	rm -f $RPM_DIR/corosync*.rpm
 fi
 
 if [ -z "$COROSYNC_CTS_DIR" ]
 then
-	COROSYNC_CTS_DIR=~/corosync-flatiron-cts
+	COROSYNC_CTS_DIR=$(pwd)
 fi
 
-rm -f $RPM_DIR/corosync*.rpm
+if [ -z "$COROSYNC_DIR" ]
+then
+	COROSYNC_DIR=$COROSYNC_CTS_DIR/../corosync-flatiron
+fi
+
+echo $COROSYNC_CTS_DIR
+echo $COROSYNC_DIR
+
+if [ ! -d $COROSYNC_DIR ]
+then
+	git clone git://corosync.org/corosync.git $COROSYNC_DIR
+	cd $COROSYNC_DIR
+	git branch | grep "\* flatiron-1.3"
+	if [ $? -ne 0 ]
+	then
+		git checkout -b flatiron-1.3 origin/flatiron-1.3
+	fi
+else
+	# cleanup corosync dir
+	cd $COROSYNC_DIR
+	git checkout -f
+	git clean -dfx
+	git pull
+fi
+cd -
 
 set -e
 
 for d in $COROSYNC_DIR $COROSYNC_CTS_DIR
 do
 	cd $d
+	$LOG 'in dir $d'
 	$LOG 'running autogen ...'
 	./autogen.sh
 	$LOG 'running configure ...'
