@@ -66,7 +66,8 @@ set -e
 for d in $COROSYNC_DIR $COROSYNC_CTS_DIR
 do
 	cd $d
-	$LOG 'in dir $d'
+	$LOG "in dir $d"
+	git clean -dfx
 	$LOG 'running autogen ...'
 	./autogen.sh
 	$LOG 'running configure ...'
