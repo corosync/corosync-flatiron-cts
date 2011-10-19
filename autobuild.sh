@@ -38,29 +38,23 @@ fi
 
 if [ -z "$COROSYNC_CTS_DIR" ]
 then
-	COROSYNC_CTS_DIR=$(pwd)
+	COROSYNC_CTS_DIR=$(pwd)/../corosync-flatiron-cts
 fi
 
 if [ -z "$COROSYNC_DIR" ]
 then
-	COROSYNC_DIR=$COROSYNC_CTS_DIR/../corosync-flatiron
+	COROSYNC_DIR=$(pwd)
 fi
 
-echo $COROSYNC_CTS_DIR
-echo $COROSYNC_DIR
+echo COROSYNC_CTS_DIR is $COROSYNC_CTS_DIR
+echo COROSYNC_DIR is $COROSYNC_DIR
 
-if [ ! -d $COROSYNC_DIR ]
+if [ ! -d $COROSYNC_CTS_DIR ]
 then
-	git clone git://corosync.org/corosync.git $COROSYNC_DIR
-	cd $COROSYNC_DIR
-	git branch | grep "\* flatiron-1.3"
-	if [ $? -ne 0 ]
-	then
-		git checkout -b flatiron-1.3 origin/flatiron-1.3
-	fi
+	git clone git://corosync.org/corosync-flatiron-cts.git $COROSYNC_CTS_DIR
+	cd $COROSYNC_CTS_DIR
 else
-	# cleanup corosync dir
-	cd $COROSYNC_DIR
+	cd $COROSYNC_CTS_DIR
 	git checkout -f
 	git clean -dfx
 	git pull
