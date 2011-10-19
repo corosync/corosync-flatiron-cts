@@ -122,11 +122,12 @@ do
         ssh $n "rpm --nodeps --force -Uvf /tmp/corosync*.rpm"
 done
 
+cd $COROSYNC_CTS_DIR
 $LOG 'running CTS ...'
 CTS_LOG=$(pwd)/cts.log
 rm -f $CTS_LOG
-pushd cts
-	# needs sudo to read /var/log/messages
-	sudo -n ./corolab.py --nodes "$TEST_NODES" --outputfile $CTS_LOG
-popd
+
+cd cts
+# needs sudo to read /var/log/messages
+sudo -n ./corolab.py --nodes "$TEST_NODES" --outputfile $CTS_LOG
 
