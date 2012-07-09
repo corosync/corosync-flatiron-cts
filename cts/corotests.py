@@ -1031,7 +1031,7 @@ class GenStopAllBeekhof(CoroTest):
         stopping = int(time.time())
         for n in self.CM.Env["nodes"]:
             self.CM.cpg_agent[n].pcmk_test()
-            self.CM.cpg_agent[n].msg_blaster(10000)
+            self.CM.cpg_agent[n].msg_blaster(1000)
             self.CM.cpg_agent[n].cfg_shutdown()
             self.CM.ShouldBeStatus[n] = "down"
 
