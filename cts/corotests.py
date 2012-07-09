@@ -695,6 +695,15 @@ class ConfdbNotificationTest(CoroTest):
         CoroTest.__init__(self, cm)
         self.name="ConfdbNotificationTest"
 
+    def setup(self, node):
+        ret = CoroTest.setup(self, node)
+
+        for n in self.CM.Env["nodes"]:
+            self.CM.confdb_agent[n].clean_start()
+
+        time.sleep(1)
+        return ret
+
     def __call__(self, node):
         self.incr("calls")
         res = self.CM.confdb_agent[node].notification_test()
