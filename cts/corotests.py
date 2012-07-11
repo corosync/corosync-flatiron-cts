@@ -1132,11 +1132,11 @@ def CoroTestList(cm, audits):
     default['uidgid/gid'] = '0'
     configs.append(default)
 
-    a = ConfigContainer('none_5min')
-    a['compatibility'] = 'none'
-    a['totem/token'] = (5 * 60 * 1000)
-    a['totem/consensus'] = int(5 * 60 * 1000 * 1.2) + 1
-    configs.append(a)
+#    a = ConfigContainer('none_5min')
+#    a['compatibility'] = 'none'
+#    a['totem/token'] = (5 * 60 * 1000)
+#    a['totem/consensus'] = int(5 * 60 * 1000 * 1.2) + 1
+#    configs.append(a)
 
     b = ConfigContainer('pcmk_basic')
     b['compatibility'] = 'whitetank'
@@ -1146,26 +1146,26 @@ def CoroTestList(cm, audits):
     b['totem/consensus'] = 7500
     configs.append(b)
 
-    c = ConfigContainer('pcmk_sec_nss')
-    c['totem/secauth'] = 'on'
-    c['totem/crypto_accept'] = 'new'
-    c['totem/crypto_type'] = 'nss'
-    c['totem/token'] = 5000
-    c['totem/token_retransmits_before_loss_const'] = 10
-    c['totem/join'] = 1000
-    c['totem/consensus'] = 7500
-    configs.append(c)
+#    c = ConfigContainer('pcmk_sec_nss')
+#    c['totem/secauth'] = 'on'
+#    c['totem/crypto_accept'] = 'new'
+#    c['totem/crypto_type'] = 'nss'
+#    c['totem/token'] = 5000
+#    c['totem/token_retransmits_before_loss_const'] = 10
+#    c['totem/join'] = 1000
+#    c['totem/consensus'] = 7500
+#    configs.append(c)
 
-    s = ConfigContainer('pcmk_vq')
-    s['quorum/provider'] = 'corosync_votequorum'
-    s['quorum/expected_votes'] = len(cm.Env["nodes"])
-    s['totem/token'] = 5000
-    s['totem/token_retransmits_before_loss_const'] = 10
-    s['totem/join'] = 1000
-    s['totem/vsftype'] = 'none'
-    s['totem/consensus'] = 7500
-    s['totem/max_messages'] = 20
-    configs.append(s)
+#    s = ConfigContainer('pcmk_vq')
+#    s['quorum/provider'] = 'corosync_votequorum'
+#    s['quorum/expected_votes'] = len(cm.Env["nodes"])
+#    s['totem/token'] = 5000
+#    s['totem/token_retransmits_before_loss_const'] = 10
+#    s['totem/join'] = 1000
+#    s['totem/vsftype'] = 'none'
+#    s['totem/consensus'] = 7500
+#    s['totem/max_messages'] = 20
+#    configs.append(s)
 
     d = ConfigContainer('sec_sober')
     d['totem/secauth'] = 'on'
