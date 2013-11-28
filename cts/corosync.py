@@ -103,10 +103,10 @@ class corosync_flatiron(ClusterManager):
 
         self.update({
             "Name"           : "corosync(flatiron)",
-            "StartCmd"       : CTSvars.INITDIR+"/corosync start",
-            "StopCmd"        : CTSvars.INITDIR+"/corosync stop",
-            "RereadCmd"      : CTSvars.INITDIR+"/corosync reload",
-            "StatusCmd"      : CTSvars.INITDIR+"/corosync status %s",
+            "StartCmd"       : "service corosync start",
+            "StopCmd"        : "service corosync stop",
+            "RereadCmd"      : "service corosync reload",
+            "StatusCmd"      : "service corosync status %s",
             "DeadTime"       : 30,
             "StartTime"      : 15,        # Max time to start up
             "StableTime"     : 10,
