@@ -241,8 +241,8 @@ class corosync_flatiron(ClusterManager):
 
         return ret
 
-    def StopaCM(self, node, verbose=False):
-        if self.ShouldBeStatus[node] != "up":
+    def StopaCM(self, node, verbose=False, force=False):
+        if self.ShouldBeStatus[node] != "up" and force == False:
             return 1
 
         self.debug('stoping corosync on : ' + node)
